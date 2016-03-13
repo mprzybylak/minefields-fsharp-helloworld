@@ -51,6 +51,43 @@ let secondFooObject =
     {   FieldA = "aa";
         Foo.FieldB = "bb"; } // explicit one field definition is enough to infer this record as Foo, not DuplicatedFoo
 
+type ContactInformation = 
+    {   Name: string;
+        LastName: string;
+        PhoneNumber: string option;         // this field is "option" of string
+        EMailAddress: string option;    }
+
+let fullContactInformation = 
+    { Name = "Jacek";
+      LastName = "Kowalski";
+      PhoneNumber = Some "111-111-111";     // this field exists so it is of type  "Some" of string
+      EMailAddress = Some "jk@foo.com"; }
+
+let notFullContactInformation = 
+    { Name = "Ewa";
+      LastName = "Kowalska";
+      PhoneNumber = None;               // this field doesn't exists so it is of type "None"
+      EMailAddress = None; }
+
+let printPhone contactInformation =
+    match contactInformation.PhoneNumber with       // example of pattern matching that allows to distinguish between Some and None
+    | Some phone -> printf "Phone is %s\n" phone
+    | None -> printf "There is no phone number!\n"
+
+
+type Weather = // discriminated union - looks like enum
+| Sunny
+| Rain
+| Snow
+| Fog
+
+let whatIsTheWeatherLike weather = 
+    match weather with
+    | Sunny -> printf "It is Sunny outside!\n"
+    | Rain -> printf "Better take an umbrella!\n"
+    | Snow -> printf "It is freezing outside!\n"
+    | Fog -> printf "I cannot see a thing!\n"
+
 [<EntryPoint>]
 let main argv = 
     printfn "hello world %d %d %s %d 3+2=%i 3-2=%d custom operation 3+3=%d" lucky unlucky duplicate mutableValue (add 3 2) (sub(3,2)) (operation 3 3 add)
@@ -62,6 +99,12 @@ let main argv =
     printfn "simple record: %A" person
     printfn "select field from record: %s" person.Name
     printfn "record creation based on other record %A" secondPerson
+    printPhone fullContactInformation
+    printPhone notFullContactInformation
+    whatIsTheWeatherLike Sunny
+    whatIsTheWeatherLike Rain
+    whatIsTheWeatherLike Snow
+    whatIsTheWeatherLike Fog
     System.Console.ReadLine() |> ignore
     0 // return an integer exit code
 
